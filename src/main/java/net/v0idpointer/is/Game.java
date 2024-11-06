@@ -7,9 +7,13 @@ import java.util.Random;
 
 public class Game extends Canvas {
 
+    private static final double TICKS_PER_SECOND = 64.0;
+
     private Thread gameThread = null;
     private Thread renderThread = null;
     private boolean isRunning = false;
+
+    private int frameCounter = 0;
 
     public Game() {
         this.setSize(640, 480);
@@ -37,13 +41,40 @@ public class Game extends Canvas {
             this.isRunning = false;
             this.gameThread.join();
             this.renderThread.join();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             System.err.println(e.getMessage());
         }
 
     }
 
-    private void run() { /* TODO: implement. */ }
+    private void run() {
+
+        long lastTime = System.nanoTime();
+        double ns = (1000000000 / Game.TICKS_PER_SECOND);
+        double delta = 0;
+        long timer = System.currentTimeMillis();
+
+        while (this.isRunning) {
+
+            long now = System.nanoTime();
+            delta += ((now - lastTime) / ns);
+            lastTime = now;
+
+            while (delta >= 1) {
+                this.tick();
+                --delta;
+            }
+
+            if ((System.currentTimeMillis() - timer) > 1000) {
+                System.out.println("FPS: " + this.frameCounter);
+                this.frameCounter = 0;
+                timer += 1000;
+            }
+
+        }
+
+    }
 
     private void tick() { /* TODO: implement. */ }
 
@@ -76,6 +107,8 @@ public class Game extends Canvas {
 
             g.dispose();
             bs.show();
+
+            ++this.frameCounter;
 
         }
 

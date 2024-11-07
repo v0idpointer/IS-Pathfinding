@@ -12,8 +12,11 @@ public class Game extends Canvas {
     private Thread gameThread = null;
     private Thread renderThread = null;
     private boolean isRunning = false;
+    private boolean isPaused = false;
 
     private int frameCounter = 0;
+
+    private double timer = 0;
 
     public Game() {
         this.setSize(640, 480);
@@ -48,6 +51,18 @@ public class Game extends Canvas {
 
     }
 
+    public void pause() {
+        this.isPaused = true;
+    }
+
+    public void resume() {
+        this.isPaused = false;
+    }
+
+    public boolean isPaused() {
+        return this.isPaused;
+    }
+
     private void run() {
 
         long lastTime = System.nanoTime();
@@ -76,7 +91,10 @@ public class Game extends Canvas {
 
     }
 
-    private void tick() { /* TODO: implement. */ }
+    private void tick() {
+        if (this.isPaused) return;
+        timer += 0.025;
+    }
 
     private void render() {
 
@@ -88,7 +106,6 @@ public class Game extends Canvas {
             for (int y = 0; y < test.getHeight(); ++y)
                 test.setRGB(x, y, rnd.nextInt(0xFFFFFF));
 
-        double timer = 0;
         // ----
 
         while (this.isRunning) {
@@ -101,9 +118,11 @@ public class Game extends Canvas {
 
             Graphics g = bs.getDrawGraphics();
 
+            g.setColor(Color.black);
+            g.fillRect(0, 0, this.getWidth(), this.getHeight());
+
             // test code:
             g.drawImage(test, (int)(Math.cos(timer) * 100 + 160), (int)(Math.sin(timer) * 100 + 120), 256, 256, null);
-            timer += 0.0025;
 
             g.dispose();
             bs.show();

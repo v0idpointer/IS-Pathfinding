@@ -1,9 +1,9 @@
 package net.v0idpointer.is;
 
+import net.v0idpointer.is.world.World;
+
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class Game extends Canvas {
 
@@ -15,8 +15,6 @@ public class Game extends Canvas {
     private boolean isPaused = false;
 
     private int frameCounter = 0;
-
-    private double timer = 0;
 
     public Game() {
         this.setSize(640, 480);
@@ -93,20 +91,12 @@ public class Game extends Canvas {
 
     private void tick() {
         if (this.isPaused) return;
-        timer += 0.025;
+        // ...
     }
 
     private void render() {
 
-        // test code:
-        Random rnd = new Random();
-        BufferedImage test = new BufferedImage(64, 64, BufferedImage.TYPE_INT_RGB);
-
-        for (int x = 0; x < test.getWidth(); ++x)
-            for (int y = 0; y < test.getHeight(); ++y)
-                test.setRGB(x, y, rnd.nextInt(0xFFFFFF));
-
-        // ----
+        World world = new World(16, 8);
 
         while (this.isRunning) {
 
@@ -117,12 +107,7 @@ public class Game extends Canvas {
             }
 
             Graphics g = bs.getDrawGraphics();
-
-            g.setColor(Color.black);
-            g.fillRect(0, 0, this.getWidth(), this.getHeight());
-
-            // test code:
-            g.drawImage(test, (int)(Math.cos(timer) * 100 + 160), (int)(Math.sin(timer) * 100 + 120), 256, 256, null);
+            world.render(g);
 
             g.dispose();
             bs.show();

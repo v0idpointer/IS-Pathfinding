@@ -45,8 +45,8 @@ public class SpriteSheet {
         BufferedImage img = this.image.getSubimage(
                 (x * Sprite.SPRITE_WIDTH),
                 (y * Sprite.SPRITE_HEIGHT),
-                ((x * Sprite.SPRITE_WIDTH) + w),
-                ((y * Sprite.SPRITE_HEIGHT) + h)
+                w,
+                h
         );
 
         return new Sprite(img);

@@ -19,10 +19,17 @@ public class CameraControls implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-            System.out.println("User is selecting the move-to position.");
-            // TODO: implement.
+
+        if ((e.getClickCount() == 2) && (this.game.getCamera() != null)) {
+
+            final int x = ((e.getX() + this.game.getCamera().getX()) / 32);
+            final int y = ((e.getY() + this.game.getCamera().getY()) / 32);
+
+            if (this.game.getWorld() != null)
+                this.game.getWorld().setPingMarkerAt(x, y);
+
         }
+
     }
 
     @Override

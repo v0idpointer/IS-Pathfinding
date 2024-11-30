@@ -1,5 +1,6 @@
 package net.v0idpointer.is;
 
+import net.v0idpointer.is.gfx.Sprite;
 import net.v0idpointer.is.gui.CameraControls;
 import net.v0idpointer.is.world.Camera;
 import net.v0idpointer.is.world.World;
@@ -43,7 +44,7 @@ public class Game extends Canvas {
         this.renderThread.start();
 
         this.camera = new Camera();
-        this.world = new World(16, 8);
+        this.world = World.loadWorld(Sprite.LEVEL1);
 
     }
 

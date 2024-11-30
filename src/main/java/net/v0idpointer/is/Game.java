@@ -1,5 +1,7 @@
 package net.v0idpointer.is;
 
+import net.v0idpointer.is.gui.CameraControls;
+import net.v0idpointer.is.world.Camera;
 import net.v0idpointer.is.world.World;
 
 import java.awt.*;
@@ -16,9 +18,17 @@ public class Game extends Canvas {
 
     private int frameCounter = 0;
 
+    private Camera camera;
+    private World world;
+
     public Game() {
         this.setSize(640, 480);
         this.setBackground(Color.black);
+
+        final CameraControls cameraControls = new CameraControls(this, 1.5f);
+        this.addMouseListener(cameraControls);
+        this.addMouseMotionListener(cameraControls);
+
     }
 
     public synchronized void start() {
@@ -31,6 +41,9 @@ public class Game extends Canvas {
         this.isRunning = true;
         this.gameThread.start();
         this.renderThread.start();
+
+        this.camera = new Camera();
+        this.world = new World(16, 8);
 
     }
 
@@ -91,12 +104,10 @@ public class Game extends Canvas {
 
     private void tick() {
         if (this.isPaused) return;
-        // ...
+        if (this.world != null) this.world.tick();
     }
 
     private void render() {
-
-        World world = new World(16, 8);
 
         while (this.isRunning) {
 
@@ -107,15 +118,43 @@ public class Game extends Canvas {
             }
 
             Graphics g = bs.getDrawGraphics();
-            world.render(g);
+            Graphics2D g2d = (Graphics2D)(g);
 
-            g.dispose();
+            g2d.translate(0, 0);
+            g2d.scale(1.00, 1.00);
+            g2d.setColor(Color.black);
+            g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+
+            if (this.camera != null) {
+                g2d.translate(-this.camera.getX(), -this.camera.getY());
+                g2d.scale(this.camera.getZoom(), this.camera.getZoom());
+            }
+
+            if (this.world != null) this.world.render(g2d);
+
+            g2d.dispose();
             bs.show();
 
             ++this.frameCounter;
 
         }
 
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 
 }

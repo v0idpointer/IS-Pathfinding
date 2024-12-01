@@ -1,5 +1,7 @@
 package net.v0idpointer.is.world;
 
+import net.v0idpointer.is.entities.Entity;
+
 public class Camera {
 
     private int x;
@@ -38,6 +40,12 @@ public class Camera {
 
     public void setZoom(double zoom) {
         this.zoom = zoom;
+    }
+
+    public void focusAt(final Entity entity) {
+        this.setX((entity.getX() * 32) - 320);
+        this.setY((entity.getY() * 32) - 240);
+        this.setZoom(1.00);
     }
 
 }

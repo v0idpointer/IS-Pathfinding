@@ -7,6 +7,8 @@ public class Sprite {
     public static final Sprite WALL = SpriteSheet.TERRAIN.getSprite(0, 0, 16, 32);
     public static final Sprite FLOOR = SpriteSheet.TERRAIN.getSprite(1, 0);
     public static final Sprite PING = SpriteSheet.TERRAIN.getSprite(3, 1);
+    public static final Sprite SLIME1 = SpriteSheet.TERRAIN.getSprite(3, 0);
+    public static final Sprite SLIME2 = SpriteSheet.TERRAIN.getSprite(5, 0);
 
     public static final Sprite LEVEL1 = SpriteSheet.TERRAIN.getSprite(0, 3, 32, 32);
 

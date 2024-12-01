@@ -1,12 +1,16 @@
 package net.v0idpointer.is.world;
 
+import net.v0idpointer.is.Game;
+import net.v0idpointer.is.ai.PathfindingAI;
 import net.v0idpointer.is.entities.Entity;
 import net.v0idpointer.is.entities.PingMarker;
+import net.v0idpointer.is.entities.Player;
 import net.v0idpointer.is.gfx.Sprite;
 
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class World {
 
@@ -15,13 +19,15 @@ public class World {
     public static final int FLOOR = 1;
     public static final int WALL = 2;
 
+    private final Game game;
     private final int width;
     private final int height;
     private final int[][] tiles;
     private final List<Entity> entities;
 
-    public World(final int width, final int height) {
+    public World(final Game game, final int width, final int height) {
 
+        this.game = game;
         this.width = width;
         this.height = height;
         this.tiles = new int[this.width][this.height];
@@ -69,6 +75,15 @@ public class World {
         marker.setX(x);
         marker.setY(y);
 
+        Entity player = this.getEntityByName("PLAYER");
+        if (player == null) return;
+
+        PathfindingAI ai = this.game.getAi();
+        if (ai == null) return;
+
+        ai.setStart(new Point(player.getX(), player.getY()));
+        ai.setEnd(new Point(x, y));
+
     }
 
     public void render(Graphics g) {
@@ -108,9 +123,11 @@ public class World {
         return this.entities;
     }
 
-    public static World loadWorld(final Sprite sprite) {
+    public static World loadWorld(final Game game, final Sprite sprite) {
 
-        World world = new World(sprite.getImage().getWidth(), sprite.getImage().getHeight());
+        World world = new World(game, sprite.getImage().getWidth(), sprite.getImage().getHeight());
+
+        LinkedList<Point> spawnPoints = new LinkedList<>();
 
         for (int y = 0; y < world.getHeight(); ++y) {
             for (int x = 0; x < world.getWidth(); ++x) {
@@ -123,9 +140,22 @@ public class World {
                     default -> World.VOID;
                 };
 
+                if (pixel == 0xFF0080) {
+                    spawnPoints.add(new Point(x, y));
+                    tile = World.FLOOR;
+                }
+
                 world.getTiles()[x][y] = tile;
 
             }
+        }
+
+        Random random = new Random();
+        if (!spawnPoints.isEmpty()) {
+            final Point spawnPoint = spawnPoints.get(random.nextInt(spawnPoints.size()));
+            final Player player = new Player(spawnPoint.x, spawnPoint.y);
+            game.getCamera().focusAt(player);
+            world.getEntities().add(player);
         }
 
         return world;

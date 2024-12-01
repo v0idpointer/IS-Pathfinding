@@ -1,5 +1,7 @@
 package net.v0idpointer.is;
 
+import net.v0idpointer.is.ai.BreadthFirstSearch;
+import net.v0idpointer.is.ai.PathfindingAI;
 import net.v0idpointer.is.gfx.Sprite;
 import net.v0idpointer.is.gui.CameraControls;
 import net.v0idpointer.is.world.Camera;
@@ -21,6 +23,7 @@ public class Game extends Canvas {
 
     private Camera camera;
     private World world;
+    private PathfindingAI ai;
 
     public Game() {
         this.setSize(640, 480);
@@ -44,7 +47,8 @@ public class Game extends Canvas {
         this.renderThread.start();
 
         this.camera = new Camera();
-        this.world = World.loadWorld(Sprite.LEVEL1);
+        this.world = World.loadWorld(this, Sprite.LEVEL1);
+        this.ai = new BreadthFirstSearch(this);
 
     }
 
@@ -106,6 +110,7 @@ public class Game extends Canvas {
     private void tick() {
         if (this.isPaused) return;
         if (this.world != null) this.world.tick();
+        if (this.ai != null) this.ai.tick();
     }
 
     private void render() {
@@ -132,6 +137,7 @@ public class Game extends Canvas {
             }
 
             if (this.world != null) this.world.render(g2d);
+            if (this.ai != null) this.ai.render(g2d);
 
             g2d.dispose();
             bs.show();
@@ -156,6 +162,14 @@ public class Game extends Canvas {
 
     public void setWorld(World world) {
         this.world = world;
+    }
+
+    public PathfindingAI getAi() {
+        return ai;
+    }
+
+    public void setAi(PathfindingAI ai) {
+        this.ai = ai;
     }
 
 }

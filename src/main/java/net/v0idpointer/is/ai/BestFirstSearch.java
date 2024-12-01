@@ -7,48 +7,67 @@ import net.v0idpointer.is.world.World;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
-public class BreadthFirstSearch extends PathfindingAI {
+public class BestFirstSearch extends PathfindingAI {
 
-    private static class BfsRecord {
+    private static class BestFirstRecord implements Comparable<BestFirstRecord> {
 
         public Point point;
+        public int heuristic;
         public LinkedList<Point> path;
 
-        public BfsRecord(final Point point) {
+        public BestFirstRecord(final Point point, final Point target) {
             this.point = point;
             this.path = new LinkedList<>();
+            this.heuristic = BestFirstRecord.calculateHeuristics(point, target);
+        }
+
+        private static int calculateHeuristics(final Point from, final Point to) {
+
+            if ((from == null) || (to == null)) return Integer.MAX_VALUE;
+
+            final int x1 = from.x;
+            final int y1 = from.y;
+            final int x2 = to.x;
+            final int y2 = to.y;
+
+            return (int)(Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2))));
+        }
+
+        @Override
+        public int compareTo(BestFirstRecord o) {
+            return Integer.compare(this.heuristic, o.heuristic);
         }
 
     }
 
     private final Game game;
-    private final Queue<BfsRecord> queue;
+    private final PriorityQueue<BestFirstRecord> priorityQueue;
     private final HashSet<Point> visited;
     private LinkedList<Point> result;
 
-    public BreadthFirstSearch(final Game game) {
+    public BestFirstSearch(final Game game) {
         this.game = game;
-        this.queue = new LinkedList<>();
+        this.priorityQueue = new PriorityQueue<>();
         this.visited = new HashSet<>();
         this.result = null;
     }
 
     @Override
-    public synchronized void tick() {
+    public void tick() {
 
         if (!this.isConfigured()) return;
         if (this.result != null) return;
 
-        if (this.queue.isEmpty()) {
+        if (this.priorityQueue.isEmpty()) {
             final Entity pingMarker = this.game.getWorld().getEntityByName("PING_MARKER");
             if (pingMarker != null) pingMarker.deleteEntity();
             this.setEnd(null);
             return;
         }
 
-        final BfsRecord current = this.queue.poll();
+        final BestFirstRecord current = this.priorityQueue.poll();
         if (this.visited.contains(current.point)) return;
 
         if (current.point.equals(this.getEnd())) {
@@ -67,7 +86,7 @@ public class BreadthFirstSearch extends PathfindingAI {
 
     }
 
-    private boolean queueTile(final BfsRecord record, final int x, final int y, final World world) {
+    private boolean queueTile(final BestFirstRecord record, final int x, final int y, final World world) {
 
         final Point point = new Point(x, y);
         if (!this.isValidFloorTile(x, y, world)) return false;
@@ -81,28 +100,31 @@ public class BreadthFirstSearch extends PathfindingAI {
             return true;
         }
 
-        BfsRecord r = new BfsRecord(point);
+        BestFirstRecord r = new BestFirstRecord(point, this.getEnd());
         r.path.addAll(record.path);
         r.path.add(record.point);
 
-        this.queue.add(r);
+        this.priorityQueue.add(r);
         return false;
     }
 
     @Override
-    public synchronized void render(Graphics g) {
+    public void render(Graphics g) {
 
         if (!this.isConfigured()) return;
 
-        // draw the outline of queued tiles:
-        if (!this.isFinished())
-            for (final BfsRecord record : this.queue) {
+        if (!this.isFinished()) {
+
+            BestFirstRecord[] records = this.priorityQueue.toArray(new BestFirstRecord[0]);
+            for (final BestFirstRecord record : records) {
                 if (record == null) continue;
                 g.setColor(Color.yellow);
                 g.drawRect((record.point.x * 32), (record.point.y * 32), 32, 32);
+                g.drawString(String.format("%d", record.heuristic), ((record.point.x * 32) + 4), ((record.point.y * 32) + 28));
             }
 
-        // if finished: draw the path from the start tile to the end tile
+        }
+
         // drawing the pathfinding result is really fucking retarded
         try {
 
@@ -116,17 +138,17 @@ public class BreadthFirstSearch extends PathfindingAI {
 
         }
         catch (Exception ex) {
-            System.err.printf("Breadth-first search: error in draw result: %s\n", ex.getMessage());
+            System.err.printf("Best-first search: error in draw result: %s\n", ex.getMessage());
         }
 
     }
 
     @Override
     public void reset() {
-        this.queue.clear();
+        this.priorityQueue.clear();
         this.visited.clear();
         this.result = null;
-        this.queue.add(new BfsRecord(this.getStart()));
+        this.priorityQueue.add(new BestFirstRecord(this.getStart(), this.getEnd()));
     }
 
     @Override

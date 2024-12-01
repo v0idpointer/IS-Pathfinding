@@ -1,6 +1,6 @@
 package net.v0idpointer.is;
 
-import net.v0idpointer.is.ai.BreadthFirstSearch;
+import net.v0idpointer.is.ai.BestFirstSearch;
 import net.v0idpointer.is.ai.PathfindingAI;
 import net.v0idpointer.is.gfx.Sprite;
 import net.v0idpointer.is.gui.CameraControls;
@@ -49,7 +49,7 @@ public class Game extends Canvas {
 
         this.camera = new Camera();
         this.world = World.loadWorld(this, Sprite.LEVEL1);
-        this.ai = new BreadthFirstSearch(this);
+        this.ai = new BestFirstSearch(this);
 
     }
 

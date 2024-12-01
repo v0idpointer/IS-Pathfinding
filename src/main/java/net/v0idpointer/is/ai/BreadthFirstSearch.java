@@ -94,7 +94,15 @@ public class BreadthFirstSearch extends PathfindingAI {
 
         if (!this.isConfigured()) return;
 
-        // draw the outline of queued tiles:
+        try { this.draw(g); }
+        catch (Exception ex) {
+            System.err.printf("Breadth-first search: error in draw: %s\n", ex);
+        }
+
+    }
+
+    private void draw(Graphics g) {
+
         if (!this.isFinished())
             for (final BfsRecord record : this.queue) {
                 if (record == null) continue;
@@ -102,21 +110,12 @@ public class BreadthFirstSearch extends PathfindingAI {
                 g.drawRect((record.point.x * 32), (record.point.y * 32), 32, 32);
             }
 
-        // if finished: draw the path from the start tile to the end tile
-        // drawing the pathfinding result is really fucking retarded
-        try {
+        LinkedList<Point> result = this.result;
+        if (result == null) return;
 
-            LinkedList<Point> result = this.result;
-            if (result == null) return;
-
-            for (final Point point : result) {
-                g.setColor(Color.green);
-                g.drawRect((point.x * 32), (point.y * 32), 32, 32);
-            }
-
-        }
-        catch (Exception ex) {
-            System.err.printf("Breadth-first search: error in draw result: %s\n", ex.getMessage());
+        for (final Point point : result) {
+            g.setColor(Color.green);
+            g.drawRect((point.x * 32), (point.y * 32), 32, 32);
         }
 
     }

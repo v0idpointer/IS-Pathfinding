@@ -6,9 +6,19 @@ public class Sprite {
 
     public static final Sprite WALL = SpriteSheet.TERRAIN.getSprite(0, 0, 16, 32);
     public static final Sprite FLOOR = SpriteSheet.TERRAIN.getSprite(1, 0);
-    public static final Sprite PING = SpriteSheet.TERRAIN.getSprite(3, 1);
-    public static final Sprite SLIME1 = SpriteSheet.TERRAIN.getSprite(3, 0);
-    public static final Sprite SLIME2 = SpriteSheet.TERRAIN.getSprite(5, 0);
+    public static final Sprite PING = SpriteSheet.TERRAIN.getSprite(0, 2);
+
+    public static final AnimatedSprite PERSON = new AnimatedSprite(
+            SpriteSheet.TERRAIN.getSprite(3, 0, 16, 32),
+            SpriteSheet.TERRAIN.getSprite(4, 0, 16, 32)
+    );
+
+    public static final AnimatedSprite PERSON_WALKING = new AnimatedSprite(
+            SpriteSheet.TERRAIN.getSprite(7, 0, 16, 32),
+            SpriteSheet.TERRAIN.getSprite(8, 0, 16, 32)
+    );
+
+    public static final Sprite PERSON_VICTORY = SpriteSheet.TERRAIN.getSprite(5, 0, 26, 32);
 
     public static final Sprite LEVEL1 = SpriteSheet.TERRAIN.getSprite(0, 3, 32, 32);
 

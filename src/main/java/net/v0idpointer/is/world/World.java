@@ -48,6 +48,9 @@ public class World {
         for (Entity entity : markedForDelete)
             this.entities.remove(entity);
 
+        if (this.game.getAi() != null)
+            this.game.getAi().tick();
+
     }
 
     public Entity getEntityByName(final String name) {
@@ -102,6 +105,9 @@ public class World {
             }
         }
 
+        if (this.game.getAi() != null)
+            this.game.getAi().render(g);
+
         for (Entity entity : this.entities)
             entity.render(g);
 
@@ -153,7 +159,7 @@ public class World {
         Random random = new Random();
         if (!spawnPoints.isEmpty()) {
             final Point spawnPoint = spawnPoints.get(random.nextInt(spawnPoints.size()));
-            final Player player = new Player(spawnPoint.x, spawnPoint.y);
+            final Player player = new Player(game, spawnPoint.x, spawnPoint.y);
             game.getCamera().focusAt(player);
             world.getEntities().add(player);
         }

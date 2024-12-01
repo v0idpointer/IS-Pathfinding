@@ -2,11 +2,9 @@ package net.v0idpointer.is.gui;
 
 import net.v0idpointer.is.Game;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
-public class CameraControls implements MouseListener, MouseMotionListener {
+public class CameraControls implements MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Game game;
     private final float sensitivity;
@@ -22,8 +20,8 @@ public class CameraControls implements MouseListener, MouseMotionListener {
 
         if ((e.getClickCount() == 2) && (this.game.getCamera() != null)) {
 
-            final int x = ((e.getX() + this.game.getCamera().getX()) / 32);
-            final int y = ((e.getY() + this.game.getCamera().getY()) / 32);
+            final int x = (int)(((double)(e.getX() + this.game.getCamera().getX()) / 32) / this.game.getCamera().getZoom());
+            final int y = (int)(((double)(e.getY() + this.game.getCamera().getY()) / 32) / this.game.getCamera().getZoom());
 
             if (this.game.getWorld() != null)
                 this.game.getWorld().setPingMarkerAt(x, y);
@@ -64,5 +62,10 @@ public class CameraControls implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) { }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        this.game.getCamera().setZoom(this.game.getCamera().getZoom() + (0.025 * -e.getWheelRotation()));
+    }
 
 }

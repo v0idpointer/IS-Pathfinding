@@ -31,6 +31,7 @@ public class Game extends Canvas {
 
         final CameraControls cameraControls = new CameraControls(this, 1.5f);
         this.addMouseListener(cameraControls);
+        this.addMouseWheelListener(cameraControls);
         this.addMouseMotionListener(cameraControls);
 
     }
@@ -110,7 +111,6 @@ public class Game extends Canvas {
     private void tick() {
         if (this.isPaused) return;
         if (this.world != null) this.world.tick();
-        if (this.ai != null) this.ai.tick();
     }
 
     private void render() {
@@ -137,7 +137,6 @@ public class Game extends Canvas {
             }
 
             if (this.world != null) this.world.render(g2d);
-            if (this.ai != null) this.ai.render(g2d);
 
             g2d.dispose();
             bs.show();

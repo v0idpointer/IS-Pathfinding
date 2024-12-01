@@ -41,9 +41,22 @@ public class BreadthFirstSearch extends PathfindingAI {
         if (!this.isConfigured()) return;
         if (this.result != null) return;
 
-        if (this.queue.isEmpty()) return;
+        if (this.queue.isEmpty()) {
+            final Entity pingMarker = this.game.getWorld().getEntityByName("PING_MARKER");
+            if (pingMarker != null) pingMarker.deleteEntity();
+            this.setEnd(null);
+            return;
+        }
+
         final BfsRecord current = this.queue.poll();
         if (this.visited.contains(current.point)) return;
+
+        if (current.point.equals(this.getEnd())) {
+            this.reset();
+            this.result = current.path;
+            this.result.add(current.point);
+            return;
+        }
 
         if (this.queueTile(current, (current.point.x + 1), current.point.y, this.game.getWorld())) return;
         if (this.queueTile(current, (current.point.x - 1), current.point.y, this.game.getWorld())) return;
@@ -93,22 +106,6 @@ public class BreadthFirstSearch extends PathfindingAI {
 
         if (!this.isConfigured()) return;
 
-        // draw the line from the player to the ping marker
-        if (!this.isFinished()) {
-
-            final Entity player = this.game.getWorld().getEntityByName("PLAYER");
-            final Entity target = this.game.getWorld().getEntityByName("PING_MARKER");
-
-            g.setColor(Color.red);
-            g.drawLine(
-                    ((player.getX() * 32) + 16),
-                    ((player.getY() * 32) + 16),
-                    ((target.getX() * 32) + 16),
-                    ((target.getY() * 32) + 16)
-            );
-
-        }
-
         // draw the outline of queued tiles:
         for (final BfsRecord record : this.queue) {
             g.setColor(Color.yellow);
@@ -117,7 +114,8 @@ public class BreadthFirstSearch extends PathfindingAI {
 
         // if finished: draw the path from the start tile to the end tile
         if (this.isFinished()) {
-            for (final Point point : this.result) {
+            for (int i = 0; i < this.result.size(); ++i) {
+                final Point point = this.result.get(i);
                 g.setColor(Color.green);
                 g.drawRect((point.x * 32), (point.y * 32), 32, 32);
             }

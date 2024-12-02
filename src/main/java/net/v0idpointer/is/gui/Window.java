@@ -7,7 +7,7 @@ import javax.swing.*;
 public class Window {
 
     public static final int WIDTH = 800;
-    public static final int HEIGHT = 800;
+    public static final int HEIGHT = 700;
     public static final String TITLE = "Intelligent Systems";
 
     private final JFrame frame;
@@ -21,7 +21,6 @@ public class Window {
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setLocationRelativeTo(null);
         this.frame.setResizable(false);
-        this.frame.setVisible(true);
         this.frame.setLayout(null);
 
         int x = ((width - gameComponent.getWidth()) / 2);
@@ -33,6 +32,8 @@ public class Window {
         GameControls controls = new GameControls(this.gameComponent);
         controls.setLocation(x, (this.gameComponent.getHeight() + 64));
         this.frame.add(controls);
+
+        this.frame.setVisible(true);
 
     }
 

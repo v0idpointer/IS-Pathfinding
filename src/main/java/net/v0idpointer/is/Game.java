@@ -1,7 +1,7 @@
 package net.v0idpointer.is;
 
-import net.v0idpointer.is.ai.BestFirstSearch;
-import net.v0idpointer.is.ai.PathfindingAI;
+import net.v0idpointer.is.ai.*;
+import net.v0idpointer.is.entities.Entity;
 import net.v0idpointer.is.gfx.Sprite;
 import net.v0idpointer.is.gui.CameraControls;
 import net.v0idpointer.is.world.Camera;
@@ -9,21 +9,23 @@ import net.v0idpointer.is.world.World;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.util.HashMap;
 
 public class Game extends Canvas {
-
-    private static final double TICKS_PER_SECOND = 64.0;
 
     private Thread gameThread = null;
     private Thread renderThread = null;
     private boolean isRunning = false;
     private boolean isPaused = false;
 
+    private double ticksPerSecond = 64.0;
     private int frameCounter = 0;
 
     private Camera camera;
     private World world;
     private PathfindingAI ai;
+
+    private HashMap<PathfindingAlgorithm, PathfindingAI> algorithms;
 
     public Game() {
         this.setSize(640, 480);
@@ -49,7 +51,12 @@ public class Game extends Canvas {
 
         this.camera = new Camera();
         this.world = World.loadWorld(this, Sprite.LEVEL1);
-        this.ai = new BestFirstSearch(this);
+
+        this.algorithms = new HashMap<>();
+        this.algorithms.put(PathfindingAlgorithm.DEPTH_FIRST_SEARCH, new DepthFirstSearch(this));
+        this.algorithms.put(PathfindingAlgorithm.BREADTH_FIRST_SEARCH, new BreadthFirstSearch(this));
+        this.algorithms.put(PathfindingAlgorithm.BEST_FIRST_SEARCH, new BestFirstSearch(this));
+        this.ai = this.algorithms.get(PathfindingAlgorithm.BREADTH_FIRST_SEARCH);
 
     }
 
@@ -83,7 +90,7 @@ public class Game extends Canvas {
     private void run() {
 
         long lastTime = System.nanoTime();
-        double ns = (1000000000 / Game.TICKS_PER_SECOND);
+        double ns = (1000000000 / this.ticksPerSecond);
         double delta = 0;
         long timer = System.currentTimeMillis();
 
@@ -103,6 +110,8 @@ public class Game extends Canvas {
                 this.frameCounter = 0;
                 timer += 1000;
             }
+
+            ns = (1000000000 / this.ticksPerSecond);
 
         }
 
@@ -169,6 +178,28 @@ public class Game extends Canvas {
 
     public void setAi(PathfindingAI ai) {
         this.ai = ai;
+    }
+
+    public void setAi(final PathfindingAlgorithm algorithm) {
+
+        if (this.world != null) {
+            final Entity pingMarker = this.world.getEntityByName("PING_MARKER");
+            if (pingMarker != null) pingMarker.deleteEntity();
+        }
+
+        PathfindingAI ai = this.algorithms.getOrDefault(algorithm, null);
+        if (ai == null) return;
+
+        ai.setStart(null);
+        ai.setEnd(null);
+        ai.reset();
+
+        this.setAi(ai);
+
+    }
+
+    public void setTickRate(final int tickRate) {
+        this.ticksPerSecond = (double)(tickRate);
     }
 
 }

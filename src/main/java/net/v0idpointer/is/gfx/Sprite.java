@@ -1,3 +1,14 @@
+/*
+
+    This project was developed as part
+    of the Intelligent Systems course
+    at Računarski fakultet (RAF).
+
+    Copyright (c) 2024 V0idPointer
+    Licensed under the MIT License
+
+*/
+
 package net.v0idpointer.is.gfx;
 
 import java.awt.image.BufferedImage;
